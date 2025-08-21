@@ -1,4 +1,3 @@
-#include <TFile.h>
 #include <TTree.h>
 #include <TCanvas.h>
 #include <TH1F.h>
@@ -6,6 +5,7 @@
 #include <TLegend.h>
 #include <iostream>
 #include <TStyle.h>
+#include <cmath>
 
 #include "ACCSEL.h"
 
@@ -190,6 +190,82 @@ for (int ifile = 0; ifile < sizeof(files)/sizeof(files[0]); ++ifile) {
         double sel_efficiency = nEntries_PASS / nEntries_TRG;
         double final_efficiency = acc_efficiency * sel_efficiency;
         double inverse_efficiency = 1.0 / final_efficiency;
+
+        //Signal Yield
+        Bu_Signal_Yield = 0;
+        Bd_Signal_Yield = 0;
+        Bs_Signal_Yield = 0;
+        X3872_Signal_Yield = 0;
+        PSI2S_Signal_Yield = 0;
+
+        //Branching Fractions
+        //B+ -> J/psi K+
+        BranchingFraction_Bu = 1.020*10^-3;
+        BranchingFraction_Bu_ERR = 0.019*10^-3; 
+
+        //B0 -> J/psi K*0
+        BranchingFraction_Bd = 1.27*10^-3;
+        BranchingFraction_Bd_ERR = 0.05*10^-3;
+
+        //Bs B0s -> J/psi phi
+        BranchingFraction_Bs = 1.03*10^-3;
+        BranchingFraction_Bs_ERR = 0.04*10^-3;
+
+        //X3872 -> J/psi Rho
+        BranchingFraction_X3872 = 3.4*10^-2; 
+        BranchingFraction_X3872_ERR = 1.1*10^-2; 
+
+        //PSI2S -> J/psi pi+ pi-
+        BranchingFraction_PSI2S = 34.69*10^-2;
+        BranchingFraction_PSI2S_ERR = 0.34*10^-2;
+
+        //X3872 -> J/psi pi+ pi- 
+        BranchingFraction_X3872_I = 4.3*10^-2;
+        BranchingFraction_X3872_I_ERR = 1.4*10^-2;
+        
+        //J/psi -> mu+ mu-
+        BranchingFraction_Jpsi = 5.961*10^-2;
+        BranchingFraction_Jpsi_ERR = 0.033*10^-2;
+
+        //Rho -> pi+ pi-
+        BranchingFraction_Rho = 1; // Rho is a resonance, so we consider it as 100% decaying to pi+ pi-.
+        BranchingFraction_Rho_ERR = 0; // No error on Rho branching fraction as it is considered 100%.
+
+        //K*0 -> K+ pi-
+        BranchingFraction_Kstar = 0.99902; // K*0 decays to K+ pi- 
+        BranchingFraction_Kstar_ERR = 0.00009; // Error on K*0 branching fraction
+
+        //phi -> K+ K-
+        BranchingFraction_phi = 0.499; // phi decays to K+ K- with a branching fraction of about 49.9%.
+        BranchingFraction_phi_ERR = 0.005; // Error on phi branching fraction (this is right dont worry about it)
+
+        // Calculate the final branching fraction
+        //B mesons
+        //B+ -> J/psi K+ -> mu+ mu- K+
+        BranchingFraction_Bu_final = BranchingFraction_Bu * BranchingFraction_Jpsi; 
+        BranchingFraction_Bu_ERR_final = sqrt(((BranchingFraction_Bu_final/BranchingFraction_Bu)*BranBranchingFraction_Bu_ERR)^2 + ((BranchingFraction_Bu_final/BranchingFraction_Jpsi) * BranchingFraction_Jpsi_ERR)^2); 
+
+        //B0 -> J/psi K*0 -> mu+ mu- K+ pi-
+        BranchingFraction_Bd_final = BranchingFraction_Bd * BranchingFraction_Kstar * BranchingFraction_Jpsi;
+        BranchingFraction_Bd_ERR_final = sqrt(((BranchingFraction_Bd_final/BranchingFraction_Bd) *BranBranchingFraction_Bd_ERR)^2 + ((BranchingFraction_Bd_final/BranchingFraction_Kstar) * BranchingFraction_Kstar_ERR)^2+ ((BranchingFraction_Bd_final/BranchingFraction_Jpsi) *BranchingFraction_Jpsi_ERR)^2); 
+        
+        //Bs -> J/psi phi -> mu+ mu- K+ K-
+        BranchingFraction_Bs_final = BranchingFraction_Bs * BranchingFraction_phi * BranchingFraction_Jpsi;
+        BranchingFraction_Bs_ERR_final = sqrt(((BranchingFraction_Bs_final/BranchingFraction_Bs)*BranchingFraction_Bs_ERR)^2+((BranchingFraction_Bs_final/BranchingFraction_phi)*BranchingFraction_phi_ERR)^2+((BranchingFraction_Bs_final/BranchingFraction_Jpsi)*BranchingFraction_Jpsi_ERR)^2)
+
+        //X and PSI2S
+        //X3872 -> J/psi Rho -> mu+ mu- pi+ pi- (Rho Err=0)
+        //X3872 -> J/psi pi+ pi-
+        BranchingFraction_X3872_final = BranchingFraction_X3872 * BranchingFraction_Jpsi * BranchingFraction_Rho + BranchingFraction_X3872_I;
+        BranchingFraction_X3872_ERR_final = sqrt(((BranchingFraction_X3872_final/BranchingFraction_X3872)*BranchingFraction_X3872_ERR)^2 + ((BranchingFraction_X3872_final/BranchingFraction_Jpsi)*BranchingFraction_Jpsi_ERR)^2+ (BranchingFraction_X3872_I_ERR)^2);
+
+        //PSI2S -> J/psi pi+ pi-
+        BranchingFraction_PSI2S_final = BranchingFraction_PSI2S * BranchingFraction_Jpsi;
+        BranchingFraction_PSI2S_ERR_final = sqrt(((BranchingFraction_PSI2S_final/BranchingFraction_PSI2S)*BranchingFraction_PSI2S_ERR)^2+((BranchingFraction_PSI2S_final/BranchingFraction_Jpsi)*BranchingFraction_Jpsi_ERR)^2);
+
+        //Luminosity
+        double L = 455; // Luminosity in pb^-1 
+
         //Output 
         std::cout << "Ngen " << nEntries_MCSIG << std::endl;
         std::cout << "Npass " << nEntries_TRG << std::endl;
@@ -198,8 +274,24 @@ for (int ifile = 0; ifile < sizeof(files)/sizeof(files[0]); ++ifile) {
         std::cout << "Selection efficiency: " << sel_efficiency << std::endl;
         std::cout << "Final efficiency: " << final_efficiency << std::endl;
         std::cout << "Inverse efficiency: " << inverse_efficiency << std::endl;
-
-
+        if (path_to_file.Contains("Bu")){ 
+        std::cout << "Branching Fraction B+ -> mu+mu- K+: " << BranchingFraction_Bu_final << " +/- " << BranchingFraction_Bu_ERR_final << std::endl;
+        std::cout << "B+ Cross Section" << (Bu_Signal_Yield*inverse_efficiency)/(BranchingFraction_Bu_final*L) << std::endl;
+        } else if (path_to_file.Contains("Bd")){ 
+        std::cout << "Branching Fraction B0 -> mu+mu- K+ pi-: " << BranchingFraction_Bd_final << " +/- " << BranchingFraction_Bd_ERR_final << std::endl;
+        std::cout << "B0 Cross Section" << (Bd_Signal_Yield*inverse_efficiency)/(BranchingFraction_Bd_final*L) << std::endl;
+        } else if (path_to_file.Contains("Bs")){ 
+        std::cout << "Branching Fraction Bs -> mu+mu- K+ K-: " << BranchingFraction_Bs_final << " +/- " << BranchingFraction_Bs_ERR_final << std::endl;
+        std::cout << "Bs Cross Section" << (Bs_Signal_Yield*inverse_efficiency)/(BranchingFraction_Bs_final*L) << std::endl;
+        } else if (path_to_file.Contains("Rho")){ 
+        std::cout << "Branching Fraction X3872 -> mu+mu- pi+ pi-: " << BranchingFraction_X3872_final << " +/- " << BranchingFraction_X3872_ERR_final << std::endl;
+        std::cout << "X3872 Cross Section" << (X3872_Signal_Yield*inverse_efficiency)/(BranchingFraction_X3872_final*L) << std::endl;
+        } else if (path_to_file.Contains("PSI2S")){ 
+        std::cout << "Branching Fraction PSI2S -> mu+mu- pi+ pi-: " << BranchingFraction_PSI2S_final << " +/- " << BranchingFraction_PSI2S_ERR_final << std::endl;
+        std::cout << "PSI2S Cross Section" << (PSI2S_Signal_Yield*inverse_efficiency)/(BranchingFraction_PSI2S_final*L) << std::endl;
+        } else {
+            std::cerr << "Unknown particle type in file name: " << path_to_file << std::endl;
+        } 
 
         //SELECT THE acc + presel CUT 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////// 
