@@ -1,3 +1,4 @@
+#include <TFile.h>
 #include <TTree.h>
 #include <TCanvas.h>
 #include <TH1F.h>
@@ -198,6 +199,12 @@ for (int ifile = 0; ifile < sizeof(files)/sizeof(files[0]); ++ifile) {
         X3872_Signal_Yield = 0;
         PSI2S_Signal_Yield = 0;
 
+        Bu_Signal_Yield_ERR = 0;
+        Bd_Signal_Yield_ERR = 0;
+        Bs_Signal_Yield_ERR = 0;
+        X3872_Signal_Yield_ERR = 0;
+        PSI2S_Signal_Yield_ERR = 0;
+
         //Branching Fractions
         //B+ -> J/psi K+
         BranchingFraction_Bu = 1.020*10^-3;
@@ -265,6 +272,20 @@ for (int ifile = 0; ifile < sizeof(files)/sizeof(files[0]); ++ifile) {
 
         //Luminosity
         double L = 455; // Luminosity in pb^-1 
+         
+        //Cross Section Calculation
+        Bu_Cross_Section = (Bu_Signal_Yield * inverse_efficiency) / (BranchingFraction_Bu_final * L);
+        Bd_Cross_Section = (Bd_Signal_Yield * inverse_efficiency) / (BranchingFraction_Bd_final * L);
+        Bs_Cross_Section = (Bs_Signal_Yield * inverse_efficiency) / (BranchingFraction_Bs_final * L);
+        X3872_Cross_Section = (X3872_Signal_Yield * inverse_efficiency) / (BranchingFraction_X3872_final * L);
+        PSI2S_C ross_Section = (PSI2S_Signal_Yield * inverse_efficiency) / (BranchingFraction_PSI2S_final * L);
+        
+        Bu_Cross_Section_ERR = sqrt(((Bu_Cross_Section/Bu_Signal_Yield)*Bu_Signal_Yield_ERR)^2+((Bu_Cross_Section/BranchingFraction_Bu_final)*BranchingFraction_Bu_ERR_final)^2);
+        Bd_Cross_Section_ERR = sqrt(((Bd_Cross_Section/Bd_Signal_Yield)*Bd_Signal_Yield_ERR)^2+((Bd_Cross_Section/BranchingFraction_Bd_final)*BranchingFraction_Bd_ERR_final)^2);
+        Bs_Cross_Section_ERR = sqrt(((Bs_Cross_Section/Bs_Signal_Yield)*Bs_Signal_Yield_ERR)^2+((Bs_Cross_Section/BranchingFraction_Bs_final)*BranchingFraction_Bs_ERR_final)^2);
+        X3872_Cross_Section_ERR = sqrt(((X3872_Cross_Section/X3872_Signal_Yield)*X3872_Signal_Yield_ERR)^2+((X3872_Cross_Section/BranchingFraction_X3872_final)*BranchingFraction_X3872_ERR_final)^2); 
+        PSI2S_Cross_Section_ERR = sqrt(((PSI2S_Cross_Section/PSI2S_Signal_Yield)*PSI2S_Signal_Yield_ERR)^2+((PSI2S_Cross_Section/BranchingFraction_PSI2S_final)*BranchingFraction_PSI2S_ERR_final)^2);
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         //Output 
         std::cout << "Ngen " << nEntries_MCSIG << std::endl;
@@ -276,19 +297,20 @@ for (int ifile = 0; ifile < sizeof(files)/sizeof(files[0]); ++ifile) {
         std::cout << "Inverse efficiency: " << inverse_efficiency << std::endl;
         if (path_to_file.Contains("Bu")){ 
         std::cout << "Branching Fraction B+ -> mu+mu- K+: " << BranchingFraction_Bu_final << " +/- " << BranchingFraction_Bu_ERR_final << std::endl;
-        std::cout << "B+ Cross Section" << (Bu_Signal_Yield*inverse_efficiency)/(BranchingFraction_Bu_final*L) << std::endl;
+        std::cout << "B+ Cross Section" << Bu_Cross_Section << " +/- " << Bu_Cross_Section_ERR << std::endl;
         } else if (path_to_file.Contains("Bd")){ 
         std::cout << "Branching Fraction B0 -> mu+mu- K+ pi-: " << BranchingFraction_Bd_final << " +/- " << BranchingFraction_Bd_ERR_final << std::endl;
-        std::cout << "B0 Cross Section" << (Bd_Signal_Yield*inverse_efficiency)/(BranchingFraction_Bd_final*L) << std::endl;
+        std::cout << "B0 Cross Section" << Bd_Cross_Section << " +/- " << Bd_Cross_Section_ERR << std::endl;
         } else if (path_to_file.Contains("Bs")){ 
         std::cout << "Branching Fraction Bs -> mu+mu- K+ K-: " << BranchingFraction_Bs_final << " +/- " << BranchingFraction_Bs_ERR_final << std::endl;
-        std::cout << "Bs Cross Section" << (Bs_Signal_Yield*inverse_efficiency)/(BranchingFraction_Bs_final*L) << std::endl;
+        std::cout << "Bs Cross Section" << Bs_Cross_Section << " +/- " << Bs_Cross_Section_ERR << std::endl;
+        } else if (path_to_file.Contains("X3872")){
         } else if (path_to_file.Contains("Rho")){ 
         std::cout << "Branching Fraction X3872 -> mu+mu- pi+ pi-: " << BranchingFraction_X3872_final << " +/- " << BranchingFraction_X3872_ERR_final << std::endl;
-        std::cout << "X3872 Cross Section" << (X3872_Signal_Yield*inverse_efficiency)/(BranchingFraction_X3872_final*L) << std::endl;
+        std::cout << "X3872 Cross Section" << X8872_Cross_Section << " +/- " << X3872_Cross_Section_ERR << std::endl;
         } else if (path_to_file.Contains("PSI2S")){ 
         std::cout << "Branching Fraction PSI2S -> mu+mu- pi+ pi-: " << BranchingFraction_PSI2S_final << " +/- " << BranchingFraction_PSI2S_ERR_final << std::endl;
-        std::cout << "PSI2S Cross Section" << (PSI2S_Signal_Yield*inverse_efficiency)/(BranchingFraction_PSI2S_final*L) << std::endl;
+        std::cout << "PSI2S Cross Section" << PSI2S_Cross_Section << " +/- " << PSI2S_Cross_Section_ERR << std::endl;
         } else {
             std::cerr << "Unknown particle type in file name: " << path_to_file << std::endl;
         } 
