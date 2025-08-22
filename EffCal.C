@@ -219,7 +219,7 @@ for (int ifile = 0; ifile < sizeof(files)/sizeof(files[0]); ++ifile) {
         double BranchingFraction_Bs_ERR = 0.04e-3;
 
         //X3872 -> J/psi Rho
-        double BranchingFraction_X3872 = 3.4e-3; 
+        double BranchingFraction_X3872 = 3.4e-2; 
         double BranchingFraction_X3872_ERR = 1.1e-2; 
 
         //PSI2S -> J/psi pi+ pi-
@@ -238,9 +238,9 @@ for (int ifile = 0; ifile < sizeof(files)/sizeof(files[0]); ++ifile) {
         double BranchingFraction_Rho = 1; // Rho is a resonance, so we consider it as 100% decaying to pi+ pi-.
         double BranchingFraction_Rho_ERR = 0; // No error on Rho branching fraction as it is considered 100%.
 
-        //K*0 -> K+ pi-
-        double BranchingFraction_Kstar = 0.99902; // K*0 decays to K+ pi- 
-        double BranchingFraction_Kstar_ERR = 0.00009; // Error on K*0 branching fraction
+        //K*(892) -> K+ pi-
+        double BranchingFraction_Kstar = 0.99902; // K* decays to K+ pi- 
+        double BranchingFraction_Kstar_ERR = 0.00009; // Error on K* branching fraction
 
         //phi -> K+ K-
         double BranchingFraction_phi = 0.499; // phi decays to K+ K- with a branching fraction of about 49.9%.
@@ -252,7 +252,7 @@ for (int ifile = 0; ifile < sizeof(files)/sizeof(files[0]); ++ifile) {
         double BranchingFraction_Bu_final = BranchingFraction_Bu * BranchingFraction_Jpsi; 
         double BranchingFraction_Bu_ERR_final = sqrt(pow(((BranchingFraction_Bu_final/BranchingFraction_Bu)*BranchingFraction_Bu_ERR),2) + pow(((BranchingFraction_Bu_final/BranchingFraction_Jpsi) * BranchingFraction_Jpsi_ERR),2)); 
 
-        //B0 -> J/psi K*0 -> mu+ mu- K+ pi-
+        //B0 -> J/psi K* -> mu+ mu- K+ pi-
         double BranchingFraction_Bd_final = BranchingFraction_Bd * BranchingFraction_Kstar * BranchingFraction_Jpsi;
         double BranchingFraction_Bd_ERR_final = sqrt(pow(((BranchingFraction_Bd_final/BranchingFraction_Bd) *BranchingFraction_Bd_ERR),2) + pow(((BranchingFraction_Bd_final/BranchingFraction_Kstar) * BranchingFraction_Kstar_ERR),2)+ pow(((BranchingFraction_Bd_final/BranchingFraction_Jpsi) *BranchingFraction_Jpsi_ERR),2)); 
         
@@ -299,29 +299,28 @@ for (int ifile = 0; ifile < sizeof(files)/sizeof(files[0]); ++ifile) {
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         //Output 
-        std::cout << "Ngen " << nEntries_MCSIG << std::endl;
-        std::cout << "Npass " << nEntries_TRG << std::endl;
-        std::cout << "N_ANpass " << nEntries_PASS << std::endl;
+        std::cout << "Ngen: " << nEntries_MCSIG << std::endl;
+        std::cout << "Npass: " << nEntries_TRG << std::endl;
+        std::cout << "N_ANpass: " << nEntries_PASS << std::endl;
         std::cout << "Acceptance efficiency: " << acc_efficiency << std::endl;
         std::cout << "Selection efficiency: " << sel_efficiency << std::endl;
         std::cout << "Final efficiency: " << final_efficiency << std::endl;
         std::cout << "Inverse efficiency: " << inverse_efficiency << std::endl;
         if (path_to_file.Contains("Bu")){ 
         std::cout << "Branching Fraction B+ -> mu+mu- K+: " << BranchingFraction_Bu_final << " +/- " << BranchingFraction_Bu_ERR_final << std::endl;
-        std::cout << "B+ Cross Section" << Bu_Cross_Section << " +/- " << Bu_Cross_Section_ERR << std::endl;
+        std::cout << "B+ Cross Section: " << Bu_Cross_Section << " +/- " << Bu_Cross_Section_ERR << " pb " << std::endl;
         } else if (path_to_file.Contains("Bd")){ 
         std::cout << "Branching Fraction B0 -> mu+mu- K+ pi-: " << BranchingFraction_Bd_final << " +/- " << BranchingFraction_Bd_ERR_final << std::endl;
-        std::cout << "B0 Cross Section" << Bd_Cross_Section << " +/- " << Bd_Cross_Section_ERR << std::endl;
+        std::cout << "B0 Cross Section: " << Bd_Cross_Section << " +/- " << Bd_Cross_Section_ERR << " pb " << std::endl;
         } else if (path_to_file.Contains("Bs")){ 
         std::cout << "Branching Fraction Bs -> mu+mu- K+ K-: " << BranchingFraction_Bs_final << " +/- " << BranchingFraction_Bs_ERR_final << std::endl;
-        std::cout << "Bs Cross Section" << Bs_Cross_Section << " +/- " << Bs_Cross_Section_ERR << std::endl;
-        } else if (path_to_file.Contains("X3872")){
+        std::cout << "Bs Cross Section: " << Bs_Cross_Section << " +/- " << Bs_Cross_Section_ERR << " pb " << std::endl;
         } else if (path_to_file.Contains("Rho")){ 
         std::cout << "Branching Fraction X3872 -> mu+mu- pi+ pi-: " << BranchingFraction_X3872_final << " +/- " << BranchingFraction_X3872_ERR_final << std::endl;
-        std::cout << "X3872 Cross Section" << X3872_Cross_Section << " +/- " << X3872_Cross_Section_ERR << std::endl;
+        std::cout << "X3872 Cross Section: " << X3872_Cross_Section << " +/- " << X3872_Cross_Section_ERR << " pb " << std::endl;
         } else if (path_to_file.Contains("PSI2S")){ 
         std::cout << "Branching Fraction PSI2S -> mu+mu- pi+ pi-: " << BranchingFraction_PSI2S_final << " +/- " << BranchingFraction_PSI2S_ERR_final << std::endl;
-        std::cout << "PSI2S Cross Section" << PSI2S_Cross_Section << " +/- " << PSI2S_Cross_Section_ERR << std::endl;
+        std::cout << "PSI2S Cross Section: " << PSI2S_Cross_Section << " +/- " << PSI2S_Cross_Section_ERR << " pb " << std::endl;
         } else {
             std::cerr << "Unknown particle type in file name: " << path_to_file << std::endl;
         } 
