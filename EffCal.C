@@ -14,8 +14,8 @@ void EffCal() {
 
 // MC FILEs
 const char * files[] = {
-    "/lstore/cms/u25lekai/Bmeson/MC/ppRef/Bu_phat5_Bfinder.root"
-    //"/lstore/cms/u25lekai/Bmeson/MC/ppRef/Bd_phat5_Bfinder.root",
+    //"/lstore/cms/u25lekai/Bmeson/MC/ppRef/Bu_phat5_Bfinder.root"
+    "/lstore/cms/u25lekai/Bmeson/MC/ppRef/Bd_phat5_Bfinder.root",
     //"/lstore/cms/u25lekai/Bmeson/MC/ppRef/Bs_phat5_Bfinder.root"
     //"/lstore/cms/henrique/X3872/MC_DATA/prompt_PSI2S_to_Jpsi_pipi_phat5_Bfinder.root" //dados MC PSI2S
     //"/lstore/cms/henrique/X3872/MC_DATA/prompt_X3872_to_Jpsi_Rho_phat5_Bfinder.root" //dados MC X           
@@ -156,7 +156,7 @@ for (int ifile = 0; ifile < sizeof(files)/sizeof(files[0]); ++ifile) {
             sepcCASES = "abs(Btktkmass - 1.019455) < 0.015"; // phi meson mass cut
             treeMix->Draw(Form("%s >> hist_MCSIG", var.Data()), Form("%s && %s", isMCsignal.Data(), FIDreg.Data()));  // MCSIG Ngen
             treeMix->Draw(Form("%s >> hist_TRG", var.Data()), Form("%s && %s && %s", isMCsignal.Data(), cut.Data(), FIDreg.Data()));  // TRG
-            treeMix->Draw(Form("%s >> hist_PASS", var.Data()), Form("Bcos_dtheta>0.99901 && %s && %s && %s && %s", isMCsignal.Data(), cut.Data(), sepcCASES.Data(), FIDreg.Data()));  // PASS
+            treeMix->Draw(Form("%s >> hist_PASS", var.Data()), Form("%s && %s && %s && %s", isMCsignal.Data(), cut.Data(), sepcCASES.Data(), FIDreg.Data()));  // PASS
         } else if (path_to_file.Contains("Bd")){ 
             sepcCASES = "abs(Btktkmass - 0.89594) < 0.25"; // Kstar meson mass cut
         } 
@@ -164,13 +164,13 @@ for (int ifile = 0; ifile < sizeof(files)/sizeof(files[0]); ++ifile) {
         if (path_to_file.Contains("Bd")){ 
             //treeMix->Draw(Form("%s >> hist_SIG_WT"  , var.Data()), Form(" (Bgen == 41000) && %s && %s", cut.Data(), sepcCASES.Data()));                              // WT component
             //treeMix->Draw(Form("%s >> hist_BKG"     , var.Data()), Form("!%s && !(Bgen == 41000) && %s && %s", isMCsignal.Data(), cut.Data(), sepcCASES.Data()));       // BKG -- (notice the *!* in the first %s)
-            treeMix->Draw(Form("%s >> hist_MCSIG", var.Data()), Form("(%s || (Bgen == 41000)) && %s", isMCsignal.Data(), FIDreg.Data()));  // MCSIG
-            treeMix->Draw(Form("%s >> hist_TRG", var.Data()), Form("(%s || (Bgen == 41000)) && %s && %s", isMCsignal.Data(), cut.Data(), FIDreg.Data()));  // TRG
-            treeMix->Draw(Form("%s >> hist_PASS", var.Data()), Form("(%s || (Bgen == 41000)) && %s && %s && %s ", isMCsignal.Data(), cut.Data(), sepcCASES.Data(), FIDreg.Data()));  // SIG + WT
+            treeMix->Draw(Form("%s >> hist_MCSIG", var.Data()), Form("(%s||Bgen==41000) && %s", isMCsignal.Data(), FIDreg.Data()));  // MCSIG
+            treeMix->Draw(Form("%s >> hist_TRG", var.Data()), Form("(%s||Bgen==41000)   && %s && %s", isMCsignal.Data(), cut.Data(), FIDreg.Data()));  // TRG
+            treeMix->Draw(Form("%s >> hist_PASS", var.Data()), Form("Bnorm_svpvDistance>3.9914 && (%s||Bgen==41000)  && %s && %s && %s ", isMCsignal.Data(), cut.Data(), sepcCASES.Data(), FIDreg.Data()));  // SIG + WT
         } else if (path_to_file.Contains("Bu")){
             treeMix->Draw(Form("%s >> hist_MCSIG", var.Data()), Form("%s && %s", isMCsignal.Data(), FIDreg.Data()));  // MCSIG Ngen
             treeMix->Draw(Form("%s >> hist_TRG", var.Data()), Form("%s && %s && %s", isMCsignal.Data(), cut.Data(), FIDreg.Data()));  // TRG
-            treeMix->Draw(Form("%s >> hist_PASS", var.Data()), Form(" Btrk1dR<1.25793 && Bnorm_svpvDistance_2D>4 && Bchi2cl>0.003 && Bnorm_svpvDistance>2 && %s && %s && %s && %s", isMCsignal.Data(), cut.Data(), sepcCASES.Data(), FIDreg.Data()));  // PASS
+            treeMix->Draw(Form("%s >> hist_PASS", var.Data()), Form(" Bnorm_svpvDistance_2D>4 && Bchi2cl>0.003 && Bnorm_svpvDistance>2 && %s && %s && %s && %s", isMCsignal.Data(), cut.Data(), sepcCASES.Data(), FIDreg.Data()));  // PASS
         } else if (path_to_file.Contains("Rho")){
             treeMix->Draw(Form("%s >> hist_MCSIG", var.Data()), Form("%s && %s", isMCsignal.Data(), FIDreg.Data()));  // MCSIG Ngen
             treeMix->Draw(Form("%s >> hist_TRG", var.Data()), Form("%s && %s && %s", isMCsignal.Data(), cut.Data(), FIDreg.Data()));  // TRG
@@ -193,90 +193,133 @@ for (int ifile = 0; ifile < sizeof(files)/sizeof(files[0]); ++ifile) {
         double inverse_efficiency = 1.0 / final_efficiency;
 
         //Signal Yield
-        double Bu_Signal_Yield = 35067.6;
-        double Bd_Signal_Yield = 0;
-        double Bs_Signal_Yield = 1055.3;
+        //double Bu_Signal_Yield = 35067.6; //Final Cut
+        double Bu_Signal_Yield = 40781.9; //First Cut 
+        double Bd_Signal_Yield = 28795.9; // First Cut Bnorm_svpvDistance_2D>3.9914
+        //double Bs_Signal_Yield = 1055.3;//Final Cut
+        //double Bs_Signal_Yield = 1859.8; // Less Tight Final Cut
+        double Bs_Signal_Yield = 3456.2; // First Cut
         double X3872_Signal_Yield = 0;
         double PSI2S_Signal_Yield = 0;
 
-        double Bu_Signal_Yield_ERR = 259.2;
-        double Bd_Signal_Yield_ERR = 0;
-        double Bs_Signal_Yield_ERR = 76.5;
+        //double Bu_Signal_Yield_ERR = 259.2;//Final Cut
+        double Bu_Signal_Yield_ERR = 380.2;//First Cut
+        double Bd_Signal_Yield_ERR = 457.9; //First Cut 
+        //double Bs_Signal_Yield_ERR = 76.5; //Final Cut
+        //double Bs_Signal_Yield_ERR = 122; //Less Tight Final Cut
+        double Bs_Signal_Yield_ERR = 322.1;// First Cut
         double X3872_Signal_Yield_ERR = 0;
         double PSI2S_Signal_Yield_ERR = 0;
+
+        double Bu_Signal_Yield_Relative_ERR = (Bu_Signal_Yield_ERR / Bu_Signal_Yield)*100;
+        double Bd_Signal_Yield_Relative_ERR = (Bd_Signal_Yield_ERR / Bd_Signal_Yield)*100;
+        double Bs_Signal_Yield_Relative_ERR = (Bs_Signal_Yield_ERR / Bs_Signal_Yield)*100;
+        double X3872_Signal_Yield_Relative_ERR = 0;
+        double PSI2S_Signal_Yield_Relative_ERR = 0;
 
         //Branching Fractions
         //B+ -> J/psi K+
         double BranchingFraction_Bu = 1.020e-3;
-        double BranchingFraction_Bu_ERR = 0.019e-3; 
+        double BranchingFraction_Bu_ERR = 0.019e-3;
+        double BranchingFraction_Bu_Relative_ERR = (BranchingFraction_Bu_ERR / BranchingFraction_Bu)*100; 
 
         //B0 -> J/psi K*0
         double BranchingFraction_Bd = 1.27e-3;
         double BranchingFraction_Bd_ERR = 0.05e-3;
+        double BranchingFraction_Bd_Relative_ERR = (BranchingFraction_Bd_ERR / BranchingFraction_Bd)*100;
 
         //Bs B0s -> J/psi phi
         double BranchingFraction_Bs = 1.03e-3;
         double BranchingFraction_Bs_ERR = 0.04e-3;
+        double BranchingFraction_Bs_Relative_ERR = (BranchingFraction_Bs_ERR / BranchingFraction_Bs)*100;
 
         //X3872 -> J/psi Rho
-        double BranchingFraction_X3872 = 3.4e-2; 
+        double BranchingFraction_X3872 = 3.4e-3; 
         double BranchingFraction_X3872_ERR = 1.1e-2; 
+        double BranchingFraction_X3872_Relative_ERR = (BranchingFraction_X3872_ERR / BranchingFraction_X3872)*100;
 
         //PSI2S -> J/psi pi+ pi-
         double BranchingFraction_PSI2S = 34.69e-2;
         double BranchingFraction_PSI2S_ERR = 0.34e-2;
+        double BranchingFraction_PSI2S_Relative_ERR = (BranchingFraction_PSI2S_ERR / BranchingFraction_PSI2S)*100;
 
         //X3872 -> J/psi pi+ pi- 
         double BranchingFraction_X3872_I = 4.3e-2;
         double BranchingFraction_X3872_I_ERR = 1.4e-2;
+        double BranchingFraction_X3872_I_Relative_ERR = (BranchingFraction_X3872_I_ERR / BranchingFraction_X3872_I)*100;
         
         //J/psi -> mu+ mu-
         double BranchingFraction_Jpsi = 5.961e-2;
         double BranchingFraction_Jpsi_ERR = 0.033e-2;
+        double BranchingFraction_Jpsi_Relative_ERR = (BranchingFraction_Jpsi_ERR / BranchingFraction_Jpsi)*100;
 
         //Rho -> pi+ pi-
         double BranchingFraction_Rho = 1; // Rho is a resonance, so we consider it as 100% decaying to pi+ pi-.
         double BranchingFraction_Rho_ERR = 0; // No error on Rho branching fraction as it is considered 100%.
 
-        //K*(892) -> K+ pi-
-        double BranchingFraction_Kstar = 0.99902; // K* decays to K+ pi- 
-        double BranchingFraction_Kstar_ERR = 0.00009; // Error on K* branching fraction
+        //K*0 -> K+ pi-
+        double BranchingFraction_Kstar = 0.99902; // K*0 decays to K+ pi- 
+        double BranchingFraction_Kstar_ERR = 0.00009; // Error on K*0 branching fraction
+        double BranchingFraction_Kstar_Relative_ERR = (BranchingFraction_Kstar_ERR / BranchingFraction_Kstar)*100;
 
         //phi -> K+ K-
         double BranchingFraction_phi = 0.499; // phi decays to K+ K- with a branching fraction of about 49.9%.
         double BranchingFraction_phi_ERR = 0.005; // Error on phi branching fraction (this is right dont worry about it)
+        double BranchingFraction_phi_Relative_ERR = (BranchingFraction_phi_ERR / BranchingFraction_phi)*100;
 
         // Calculate the final branching fraction
         //B mesons
         //B+ -> J/psi K+ -> mu+ mu- K+
         double BranchingFraction_Bu_final = BranchingFraction_Bu * BranchingFraction_Jpsi; 
         double BranchingFraction_Bu_ERR_final = sqrt(pow(((BranchingFraction_Bu_final/BranchingFraction_Bu)*BranchingFraction_Bu_ERR),2) + pow(((BranchingFraction_Bu_final/BranchingFraction_Jpsi) * BranchingFraction_Jpsi_ERR),2)); 
-
-        //B0 -> J/psi K* -> mu+ mu- K+ pi-
+        double BranchingFraction_Bu_Relative_ERR_final1 = (BranchingFraction_Bu_ERR_final / BranchingFraction_Bu_final)*100;
+        double BranchingFraction_Bu_Relative_ERR_final2 = sqrt(pow(BranchingFraction_Bu_Relative_ERR,2) + pow(BranchingFraction_Jpsi_Relative_ERR,2));
+        //B0 -> J/psi K*0 -> mu+ mu- K+ pi-
         double BranchingFraction_Bd_final = BranchingFraction_Bd * BranchingFraction_Kstar * BranchingFraction_Jpsi;
         double BranchingFraction_Bd_ERR_final = sqrt(pow(((BranchingFraction_Bd_final/BranchingFraction_Bd) *BranchingFraction_Bd_ERR),2) + pow(((BranchingFraction_Bd_final/BranchingFraction_Kstar) * BranchingFraction_Kstar_ERR),2)+ pow(((BranchingFraction_Bd_final/BranchingFraction_Jpsi) *BranchingFraction_Jpsi_ERR),2)); 
-        
+        double BranchingFraction_Bd_Relative_ERR_final1 = (BranchingFraction_Bd_ERR_final / BranchingFraction_Bd_final)*100;
+        double BranchingFraction_Bd_Relative_ERR_final2 = sqrt(pow(BranchingFraction_Bd_Relative_ERR,2) + pow(BranchingFraction_Kstar_Relative_ERR,2) + pow(BranchingFraction_Jpsi_Relative_ERR,2));    
         //Bs -> J/psi phi -> mu+ mu- K+ K-
         double BranchingFraction_Bs_final = BranchingFraction_Bs * BranchingFraction_phi * BranchingFraction_Jpsi;
         double BranchingFraction_Bs_ERR_final = sqrt(pow(((BranchingFraction_Bs_final/BranchingFraction_Bs)*BranchingFraction_Bs_ERR),2)+pow(((BranchingFraction_Bs_final/BranchingFraction_phi)*BranchingFraction_phi_ERR),2)+pow(((BranchingFraction_Bs_final/BranchingFraction_Jpsi)*BranchingFraction_Jpsi_ERR),2));
-
+        double BranchingFraction_Bs_Relative_ERR_final1 = (BranchingFraction_Bs_ERR_final / BranchingFraction_Bs_final)*100;
+        double BranchingFraction_Bs_Relative_ERR_final2 = sqrt(pow(BranchingFraction_Bs_Relative_ERR,2) + pow(BranchingFraction_phi_Relative_ERR,2) + pow(BranchingFraction_Jpsi_Relative_ERR,2));  
         //X and PSI2S
         //X3872 -> J/psi Rho -> mu+ mu- pi+ pi- (Rho Err=0)
-        //X3872 -> J/psi pi+ pi-
-        double BranchingFraction_X3872_final = BranchingFraction_X3872 * BranchingFraction_Jpsi * BranchingFraction_Rho + BranchingFraction_X3872_I;
+        //X3872 -> J/psi pi+ pi- -> mu+ mu- pi+ pi- 
+        double BranchingFraction_X3872_final = BranchingFraction_X3872 * BranchingFraction_Jpsi * BranchingFraction_Rho + BranchingFraction_X3872_I* BranchingFraction_Jpsi; // Here we add both decay channels
         double BranchingFraction_X3872_ERR_final = sqrt(
-            pow((BranchingFraction_X3872_final/BranchingFraction_X3872)*BranchingFraction_X3872_ERR, 2) + 
-            pow((BranchingFraction_X3872_final/BranchingFraction_Jpsi)*BranchingFraction_Jpsi_ERR, 2) + 
-            pow(BranchingFraction_X3872_I_ERR, 2));
-
+            pow((BranchingFraction_X3872 * BranchingFraction_Jpsi * BranchingFraction_Rho / BranchingFraction_X3872) * BranchingFraction_X3872_ERR, 2) + 
+            pow((BranchingFraction_X3872 * BranchingFraction_Jpsi * BranchingFraction_Rho / BranchingFraction_Jpsi) * BranchingFraction_Jpsi_ERR, 2) + 
+            pow((BranchingFraction_X3872_I * BranchingFraction_Jpsi / BranchingFraction_X3872_I) * BranchingFraction_X3872_I_ERR, 2) + 
+            pow((BranchingFraction_X3872_I * BranchingFraction_Jpsi / BranchingFraction_Jpsi) * BranchingFraction_Jpsi_ERR, 2)
+        );
+        double BranchingFraction_X3872_Relative_ERR_final1 = (BranchingFraction_X3872_ERR_final / BranchingFraction_X3872_final)*100;
+        double BranchingFraction_X3872_Relative_ERR_final2 = sqrt(
+            pow(BranchingFraction_X3872_Relative_ERR, 2) + 
+            pow(BranchingFraction_Jpsi_Relative_ERR, 2) + 
+            pow(BranchingFraction_X3872_I_Relative_ERR, 2) + 
+            pow(BranchingFraction_Jpsi_Relative_ERR, 2)
+        );
         // PSI2S -> J/psi pi+ pi-
         double BranchingFraction_PSI2S_final = BranchingFraction_PSI2S * BranchingFraction_Jpsi;
         double BranchingFraction_PSI2S_ERR_final = sqrt(
             pow((BranchingFraction_PSI2S_final/BranchingFraction_PSI2S)*BranchingFraction_PSI2S_ERR, 2) + 
             pow((BranchingFraction_PSI2S_final/BranchingFraction_Jpsi)*BranchingFraction_Jpsi_ERR, 2));
+        double BranchingFraction_PSI2S_Relative_ERR_final1 = (BranchingFraction_PSI2S_ERR_final / BranchingFraction_PSI2S_final)*100;
+        double BranchingFraction_PSI2S_Relative_ERR_final2 = sqrt(pow(BranchingFraction_PSI2S_Relative_ERR,2) + pow(BranchingFraction_Jpsi_Relative_ERR,2));
 
         // Luminosity
         double L = 455; // Luminosity in pb^-1 
+        double L_ERR = 15; // Luminosity error in pb^-1
+        double L_Relative_ERR = (L_ERR / L)*100;
+
+        //Fit Models Systematic Uncertainty
+        double Bu_Fit_Syst_Relative_ERR = 1.51; // 1.51% systematic uncertainty from
+        double Bd_Fit_Syst_Relative_ERR = 0; // ?% systematic uncertainty from
+        double Bs_Fit_Syst_Relative_ERR = 0; // ?% systematic uncertainty from
+        double X3872_Fit_Syst_Relative_ERR = 0.0; // No data
+        double PSI2S_Fit_Syst_Relative_ERR = 0.0; // No data
          
         // Cross Section Calculation
         double Bu_Cross_Section     = (Bu_Signal_Yield     * inverse_efficiency) / (BranchingFraction_Bu_final     * L);
@@ -296,6 +339,21 @@ for (int ifile = 0; ifile < sizeof(files)/sizeof(files[0]); ++ifile) {
         double PSI2S_Cross_Section_ERR = sqrt(pow((PSI2S_Cross_Section/PSI2S_Signal_Yield)*PSI2S_Signal_Yield_ERR, 2) + 
                                               pow((PSI2S_Cross_Section/BranchingFraction_PSI2S_final)*BranchingFraction_PSI2S_ERR_final, 2));
 
+        // Relative Errors
+        double Bu_Cross_Section_Relative_ERR_1    = (Bu_Cross_Section_ERR / Bu_Cross_Section)*100;
+        double Bu_Cross_Section_Relative_ERR_2    = sqrt(pow(Bu_Signal_Yield_Relative_ERR,2) + pow(BranchingFraction_Bu_Relative_ERR_final2,2) + pow(L_Relative_ERR,2));
+        
+        double Bd_Cross_Section_Relative_ERR_1    = (Bd_Cross_Section_ERR / Bd_Cross_Section)*100;
+        double Bd_Cross_Section_Relative_ERR_2    = sqrt(pow(Bd_Signal_Yield_Relative_ERR,2) + pow(BranchingFraction_Bd_Relative_ERR_final2,2) + pow(L_Relative_ERR,2));
+
+        double Bs_Cross_Section_Relative_ERR_1    = (Bs_Cross_Section_ERR / Bs_Cross_Section)*100;
+        double Bs_Cross_Section_Relative_ERR_2    = sqrt(pow(Bs_Signal_Yield_Relative_ERR,2) + pow(BranchingFraction_Bs_Relative_ERR_final2,2) + pow(L_Relative_ERR,2));
+
+        double X3872_Cross_Section_Relative_ERR_1 = (X3872_Cross_Section_ERR / X3872_Cross_Section)*100;
+        double X3872_Cross_Section_Relative_ERR_2 = sqrt(pow(X3872_Signal_Yield_Relative_ERR,2) + pow(BranchingFraction_X3872_Relative_ERR_final2,2) + pow(L_Relative_ERR,2));
+
+        double PSI2S_Cross_Section_Relative_ERR_1 = (PSI2S_Cross_Section_ERR / PSI2S_Cross_Section)*100;
+        double PSI2S_Cross_Section_Relative_ERR_2 = sqrt(pow(PSI2S_Signal_Yield_Relative_ERR,2) + pow(BranchingFraction_PSI2S_Relative_ERR_final2,2) + pow(L_Relative_ERR,2));
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         //Output 
@@ -308,19 +366,21 @@ for (int ifile = 0; ifile < sizeof(files)/sizeof(files[0]); ++ifile) {
         std::cout << "Inverse efficiency: " << inverse_efficiency << std::endl;
         if (path_to_file.Contains("Bu")){ 
         std::cout << "Branching Fraction B+ -> mu+mu- K+: " << BranchingFraction_Bu_final << " +/- " << BranchingFraction_Bu_ERR_final << std::endl;
-        std::cout << "B+ Cross Section: " << Bu_Cross_Section << " +/- " << Bu_Cross_Section_ERR << " pb " << std::endl;
+        std::cout << "B+ Cross Section" << Bu_Cross_Section << " +/- " << Bu_Cross_Section_ERR << " pb " << std::endl;
+        std::cout << "Bu Cross Section Relative ERR (from Yield, Fit Models and Luminosity): " << Bu_Cross_Section_Relative_ERR_2 << " %" << std::endl;
         } else if (path_to_file.Contains("Bd")){ 
         std::cout << "Branching Fraction B0 -> mu+mu- K+ pi-: " << BranchingFraction_Bd_final << " +/- " << BranchingFraction_Bd_ERR_final << std::endl;
-        std::cout << "B0 Cross Section: " << Bd_Cross_Section << " +/- " << Bd_Cross_Section_ERR << " pb " << std::endl;
+        std::cout << "B0 Cross Section" << Bd_Cross_Section << " +/- " << Bd_Cross_Section_ERR << " pb " << std::endl;
         } else if (path_to_file.Contains("Bs")){ 
         std::cout << "Branching Fraction Bs -> mu+mu- K+ K-: " << BranchingFraction_Bs_final << " +/- " << BranchingFraction_Bs_ERR_final << std::endl;
-        std::cout << "Bs Cross Section: " << Bs_Cross_Section << " +/- " << Bs_Cross_Section_ERR << " pb " << std::endl;
+        std::cout << "Bs Cross Section" << Bs_Cross_Section << " +/- " << Bs_Cross_Section_ERR << " pb " << std::endl;
+        } else if (path_to_file.Contains("X3872")){
         } else if (path_to_file.Contains("Rho")){ 
         std::cout << "Branching Fraction X3872 -> mu+mu- pi+ pi-: " << BranchingFraction_X3872_final << " +/- " << BranchingFraction_X3872_ERR_final << std::endl;
-        std::cout << "X3872 Cross Section: " << X3872_Cross_Section << " +/- " << X3872_Cross_Section_ERR << " pb " << std::endl;
+        std::cout << "X3872 Cross Section" << X3872_Cross_Section << " +/- " << X3872_Cross_Section_ERR << " pb " << std::endl;
         } else if (path_to_file.Contains("PSI2S")){ 
         std::cout << "Branching Fraction PSI2S -> mu+mu- pi+ pi-: " << BranchingFraction_PSI2S_final << " +/- " << BranchingFraction_PSI2S_ERR_final << std::endl;
-        std::cout << "PSI2S Cross Section: " << PSI2S_Cross_Section << " +/- " << PSI2S_Cross_Section_ERR << " pb " << std::endl;
+        std::cout << "PSI2S Cross Section" << PSI2S_Cross_Section << " +/- " << PSI2S_Cross_Section_ERR << " pb " << std::endl;
         } else {
             std::cerr << "Unknown particle type in file name: " << path_to_file << std::endl;
         } 
